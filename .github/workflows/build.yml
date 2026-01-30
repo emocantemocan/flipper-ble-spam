@@ -1,0 +1,41 @@
+```yaml
+name: Build FAP
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        submodules: false
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install ufbt
+      run: |
+        python -m pip install --upgrade pip
+        pip install ufbt
+    
+    - name: Build FAP
+      run: |
+        ufbt update
+        ufbt build
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ble_spam_custom.fap
+        path: dist/*.fap
+```
