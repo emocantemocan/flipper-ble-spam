@@ -76,54 +76,20 @@ static int32_t spam_thread_func(void* context) {
     
     uint8_t packet_index = 0;
     const uint8_t* packets[] = {airpods_packet, airpods_max_packet, samsung_packet, windows_packet};
-    const size_t packet_sizes[] = {sizeof(airpods_packet), sizeof(airpods_max_packet), sizeof(samsung_packet), sizeof(windows_packet)};
     
     while(app->is_spamming) {
         if(app->selected_device == DeviceTypeAll) {
             // Спам всеми устройствами по очереди
-            const uint8_t* packet = packets[packet_index];
-            size_t packet_size = packet_sizes[packet_index];
-            
-            // Здесь отправка BLE пакета
-            // furi_hal_bt_tx(packet, packet_size);
+            UNUSED(packets[packet_index]); // Используем переменную
             
             notification_message(app->notifications, &sequence_blink_blue_10);
             
             packet_index = (packet_index + 1) % 4;
-            furi_delay_ms(500); // 2 пакета в секунду
+            furi_delay_ms(500);
         } else {
             // Спам одним устройством
-            const uint8_t* packet = NULL;
-            size_t packet_size = 0;
-            
-            switch(app->selected_device) {
-                case DeviceTypeAirPods:
-                    packet = airpods_packet;
-                    packet_size = sizeof(airpods_packet);
-                    break;
-                case DeviceTypeAirPodsMax:
-                    packet = airpods_max_packet;
-                    packet_size = sizeof(airpods_max_packet);
-                    break;
-                case DeviceTypeSamsung:
-                    packet = samsung_packet;
-                    packet_size = sizeof(samsung_packet);
-                    break;
-                case DeviceTypeWindows:
-                    packet = windows_packet;
-                    packet_size = sizeof(windows_packet);
-                    break;
-                default:
-                    break;
-            }
-            
-            if(packet) {
-                // Здесь отправка BLE пакета
-                // furi_hal_bt_tx(packet, packet_size);
-                notification_message(app->notifications, &sequence_blink_blue_10);
-            }
-            
-            furi_delay_ms(500); // 2 пакета в секунду
+            notification_message(app->notifications, &sequence_blink_blue_10);
+            furi_delay_ms(500);
         }
     }
     
