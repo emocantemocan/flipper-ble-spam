@@ -1,25 +1,51 @@
-name: Build
+name: Build Flipper App
 
 on:
-  push:
-  workflow_dispatch:
+push:
+workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup ufbt
-        run: |
-          pip install ufbt
-          ufbt update --channel=release
-          
-      - name: Build app
-        run: ufbt build
-        
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: app
-          path: dist/*.fap
+build:
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+
+  - name: Setup Python
+    uses: actions/setup-python@v5
+    with:
+      python-version: "3.x"
+
+  - name: Install ufbt
+    run: |
+      python -m pip install --upgrade pip
+      pip install ufbt
+      ufbt update --channel=release
+
+  - name: Build application
+    run: ufbt build
+
+  # Nerede üretildiğini görmek için (çok faydalı)
+  - name: Debug build output
+    run: |
+      echo "Listing ufbt build folder:"
+      ls -lah ~/.ufbt/build || true
+      echo "Searching for .fap:"
+      find ~ -name "*.fap"
+
+  - name: Collect artifact
+    run: |
+      mkdir -p dist
+      cp ~/.ufbt/build/*.fap dist/ || true
+      ls -lah dist
+
+  - name: Upload artifact
+    uses: actions/upload-artifact@v4
+    with:
+      name: flipper-app
+      path: dist/*.fap
+```
